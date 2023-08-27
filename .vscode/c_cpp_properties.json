@@ -38,7 +38,10 @@
                 "${workspaceFolder}\\Multiprotocol\\DSM.ino",
                 "${workspaceFolder}\\Multiprotocol\\Telemetry.ino",
                 "${workspaceFolder}\\Multiprotocol\\Arduino.ino",
-                "${workspaceFolder}\\Multiprotocol\\Multi_Protos.ino"
+                "${workspaceFolder}\\Multiprotocol\\Multi_Protos.ino",
+                "${workspaceFolder}\\Multiprotocol\\Multi_Config.ino",
+                "${workspaceFolder}\\Multiprotocol\\Convert.ino",
+                "${workspaceFolder}\\Multiprotocol\\FrSkyDVX_Common.ino"
             ],
             "cStandard": "c11",
             "cppStandard": "c++11",
