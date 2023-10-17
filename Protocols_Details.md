@@ -75,7 +75,7 @@ CFlie|38|CFlie||||||||NRF24L01|
 [Devo](Protocols_Details.md#DEVO---7)|7|Devo|8CH|10CH|12CH|6CH|7CH|||CYRF6936|
 [DM002](Protocols_Details.md#DM002---33)|33|||||||||NRF24L01|XN297
 [DSM](Protocols_Details.md#DSM---6)|6|DSM2_1F|DSM2_2F|DSMX_1F|DSMX_2F|AUTO|DSMR_1F|||CYRF6936|
-[DSM_RX](Protocols_Details.md#DSM_RX---70)|70|Multi|CPPM|||||||CYRF6936|
+[DSM_RX](Protocols_Details.md#DSM_RX---70)|70|Multi|CloneTX|EraseTX|CPPM|||||CYRF6936|
 [E010R5](Protocols_Details.md#E010R5---81)|81|||||||||CYRF6936|RF2500
 [E016H](Protocols_Details.md#E016H---85)|85|||||||||NRF24L01|XN297
 [E016HV2](Protocols_Details.md#E016HV2---80)|80|||||||||CC2500/NRF24L01|unknown
@@ -515,7 +515,7 @@ Notes:
  - TH_KILL is a feature which is enabled on channel 14 by default (can be disabled/changed) in the _config.h file. Some models (X-Vert, Blade 230S...) require a special position to instant stop the motor(s). If the channel 14 is above -50% the throttle is untouched but if it is between -50% and -100%, the throttle output will be forced between -100% and -150%. For example, a value of -80% applied on channel 14 will instantly kill the motors on the X-Vert.
  - To allow SAFE to be ON with a switch assignment you must remove the bind plug after powering up the RX but before turning on the TX to bind. If you select Autodetect to bind, The MPM will choose DSMX 11ms and Channels 1-7 ( Change to 1-9 if you wish to assign switch above channel 7 ). Then in order to use the manuals diagram of both sticks "Down-Inside" to set a SAFE Select Switch Designation, you must have Throttle and Elevator channels set to Normal direction but the Aileron and Rudder set to Reverse direction. If setting up a new model with all channels set to Normal you can hold both sticks "Down- OUTSIDE" to assign the switch with 5x flips. Tested on a Mode2 radio.
  
-Option=number of channels from 3 to 12. Option|0x80 enables Max Throw. Option|0x40 enables a servo refresh rate of 11ms.
+Option=number of channels from 3 to 12. Option|0x80 enables Max Throw. Option|0x40 enables a servo refresh rate of 11ms. Option|0x20 Use Cloned ID learnt from another DSM radio (when binding with the DSM_RX/CloneTX mode).
 
 Here is a table detailling the different RX output ranges based on the radio settings:
 ![Image](/docs/images/DSM_RX_Output.JPG)
@@ -559,7 +559,35 @@ A|E|T|R|CH5|CH6|CH7|CH8|CH9|CH10|CH11|CH12
 ### Sub_protocol Multi - *0*
 Use the telemetry to send the trainer information to the radio.
 
-### Sub_protocol CPPM - *1*
+### Sub_protocol CloneTX - *1*
+This subprotocol makes a clone of a TX identifier transmitting DSM2 or DSMX.
+
+Clone mode operation:
+- Select the DSM_RX protocol, subprotocol CloneTX
+- Cloning Spektrum Radio:
+   - Create a new model in the Spektrum radio that you want to clone - the model will be named 'xx:Acro' 
+   - Set the "Receiver" number in the CloneTX settings to xx - 1 (so if xx = 12, then Receiver will be 11)
+- Cloning MPM Radio:
+   - Ensure the "Receiver" numbers match on both radios 
+- Place MPM (RX) in bind mode, followed by TX (to be cloned)
+- Wait for the bind to complete
+- To use the cloned TX identifier, open a new model select the protocol you just cloned/binded and select "Cloned" under "Subtype"
+- Cloning Spektrum Radio:
+   - "Receiver" number will be the Spektrum model number -1 
+- Cloning MPM Radio:
+   - "Receiver" number will be the same as the cloned radio
+- "Subtype" and "Ch.Range" need to be changed to match the original bind.
+
+Notes:
+- Requires EdgeTX 2.10 or later (at time of writing this has not been released) and MPM 1.3.3.33
+- If you have re-ordered/deleted models in a Spektrum radio the model numbers will not necessarily match the modelmatch (reciever) number.  In this case you need to use a trial and error approach. Follow the instructions for cloning, match the Subtype and Ch.Range and cycle through "Receiver" numbers until the model responds.
+
+### Sub_protocol EraseTX - *2*
+This subprotocol erases ALL the clone IDs which have been recorded.
+
+To erase ALL the clone information, select the sub_protocol EraseTX and execute a bind.
+
+### Sub_protocol CPPM - *3*
 Sending trainer channels to FrSky radios through telemetry does not work since the telemetry lines of the internal and external modules are shared (hardware limitation).
 On a STM32 module and with a simple hardware modification, you can go around this limitation using CPPM to send the trainer information to the radio.
 For more information check the [CCPM Hardware Modification](/docs/CPPM_HW_Mod.md) page.
